@@ -193,7 +193,7 @@ CONTAINS
   SUBROUTINE setup_tables_bremsstrahlung
 
     INTEGER :: z_temp, iu, io
-    INTEGER :: i_species, iz, jz
+    INTEGER :: i_species, i_sol, iz, jz
     INTEGER, ALLOCATABLE :: z_flags(:)
     CHARACTER(LEN=3) :: z_string
     INTEGER :: size_k, size_t
