@@ -254,6 +254,7 @@ MODULE constants
   INTEGER, PARAMETER :: c_resist_milchberg = 2
   INTEGER, PARAMETER :: c_resist_plastic = 3
   INTEGER, PARAMETER :: c_resist_rlm = 4
+  INTEGER, PARAMETER :: c_resist_table = 5
 #endif
 
   ! Hybrid electron injector: mean e- energy models

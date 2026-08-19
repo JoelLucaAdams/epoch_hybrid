@@ -722,6 +722,7 @@ MODULE shared_data
     REAL(num) :: mass_no = -1.0_num
     INTEGER :: z = -1
     INTEGER :: res_model = 1
+    CHARACTER(LEN=string_length) :: resistivity_table_location
     REAL(num), ALLOCATABLE :: ion_density(:,:,:), el_density(:,:,:)
 
     ! Derived variables

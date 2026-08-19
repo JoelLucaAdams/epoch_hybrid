@@ -95,6 +95,8 @@ CONTAINS
             resistivity(ix,iy,iz) = calc_resistivity_plastic(hy_te(ix,iy,iz))
           CASE(c_resist_rlm)
             resistivity(ix,iy,iz) = calc_resistivity_rlm(ix,iy,iz)
+          CASE(c_resist_table)
+            resistivity(ix,iy,iz) = calc_resistivity_table(ix,iy,iz)
           END SELECT
         END DO
       END DO
@@ -195,6 +197,21 @@ CONTAINS
   END FUNCTION calc_resistivity_rlm
 
 
+  FUNCTION calc_resistivity_table(ix, iy, iz)
+
+    ! Calculates resistivity using values provided from an interpolated table
+
+    INTEGER, INTENT(IN) :: ix, iy, iz
+    REAL(num) :: calc_resistivity_table
+
+    ! Load data from resisitivity_table_location
+
+    ! Interpolate data...
+
+    ! J_NOTE: Correct this after implementation
+    calc_resistivity_table = 1
+
+  END FUNCTION calc_resistivity_table
 
   FUNCTION thomas_fermi_ionisation(ix, iy, iz)
 

@@ -36,6 +36,42 @@ CONTAINS
 
   SUBROUTINE solid_deck_finalise
 
+    INTEGER :: io, iu
+#ifdef HYBRID
+    LOGICAL :: exists
+    INTEGER :: isolid
+
+    IF (deck_state == c_ds_first) RETURN
+
+    DO isolid = 1, solid_count
+      IF (rank == 0 .AND. use_hybrid .AND. solid_array(isolid)%res_model == c_resist_table) THEN
+        INQUIRE(file=TRIM(solid_array(isolid)%resistivity_table_location), exist=exists)
+        IF (.NOT.exists) THEN
+          DO iu = 1, nio_units ! Print to stdout and to file
+            io = io_units(iu)
+            WRITE(io,*) '*** ERROR ***'
+            WRITE(io,*) 'Unable to find the resistivity table ', &
+                '"' // TRIM(solid_array(isolid)%resistivity_table_location) // '"'
+          END DO
+          CALL abort_code(c_err_io_error)
+        END IF
+      END IF
+    END DO
+
+#else
+    IF (use_hybrid) THEN
+      IF (rank == 0) THEN
+        DO iu = 1, nio_units ! Print to stdout and to file
+          io = io_units(iu)
+          WRITE(io,*) '*** ERROR ***'
+          WRITE(io,*) 'Unable to set "use_hybrid=T" in the "hybrid" block.'
+          WRITE(io,*) 'Please recompile with the -DPHOTONS preprocessor flag.'
+        END DO
+      END IF
+      CALL abort_code(c_err_pp_options_missing)
+    END IF
+#endif
+
   END SUBROUTINE solid_deck_finalise
 
 
@@ -113,6 +149,8 @@ CONTAINS
 
     CHARACTER(*), INTENT(IN) :: element, value
     INTEGER :: errcode
+    LOGICAL :: got_file
+    CHARACTER(LEN=string_length) :: filename
 #ifdef HYBRID
     INTEGER :: io, iu
 #endif
@@ -163,6 +201,8 @@ CONTAINS
         solid_array(solid_index)%res_model = c_resist_plastic
       ELSE IF (str_cmp(value, 'rlm')) THEN
         solid_array(solid_index)%res_model = c_resist_rlm
+      ELSE IF (str_cmp(value, 'table')) THEN
+        solid_array(solid_index)%res_model = c_resist_table
       ELSE
         IF (rank == 0) THEN
           DO iu = 1, nio_units ! Print to stdout and to file
@@ -178,6 +218,12 @@ CONTAINS
       RETURN
     END IF
 
+    IF (str_cmp(element, 'resistivity_table_location') &
+        .OR. str_cmp(element, 'res_table_location')) THEN
+      solid_array(solid_index)%resistivity_table_location = TRIM(ADJUSTL(value))
+      RETURN
+    END If
+
     errcode = c_err_unknown_element
 #endif
 
@@ -188,9 +234,32 @@ CONTAINS
   FUNCTION solid_block_check() RESULT(errcode)
 
     INTEGER :: errcode
+#ifdef HYBRID
+    INTEGER :: io, iu, isolid
+#endif
 
     errcode = c_err_none
 
+#ifdef HYBRID
+    DO isolid = 1, solid_count
+      print*, solid_array(isolid)%res_model
+      print*, solid_array(isolid)%resistivity_table_location
+
+      IF (solid_array(isolid)%res_model /= c_resist_table &
+          .AND. LEN_TRIM(solid_array(isolid)%resistivity_table_location) > 0) THEN
+        IF (rank == 0) THEN
+          DO iu = 1, nio_units ! Print to stdout and to file
+            io = io_units(iu)
+            WRITE(io,*)
+            WRITE(io,*) '*** WARNING ***'
+            WRITE(io,*) 'You cannot specify a resistivity_table_location ', &
+                'without configuring res_model=table in this solid.'
+            WRITE(io, *) 'Code will ignore the supplied resistivity table.'
+          END DO
+        END IF
+      END IF
+    END DO
+#endif
   END FUNCTION solid_block_check
 
 
