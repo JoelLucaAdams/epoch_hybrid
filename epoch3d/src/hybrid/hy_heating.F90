@@ -102,14 +102,18 @@ CONTAINS
 
     ! Precalculate the ion_heat_const array if ionisation loss is running
     IF (use_hybrid_collisions) THEN
-      ALLOCATE(ion_heat_const(1-ng:nx+ng,1-ng:ny+ng,1-ng:nz+ng))
-      ion_heat_const = i_kb_sumne2 * idx * idy * idz
+      IF (.NOT. ALLOCATED(ion_heat_const)) THEN
+        ALLOCATE(ion_heat_const(1-ng:nx+ng,1-ng:ny+ng,1-ng:nz+ng))
+        ion_heat_const = i_kb_sumne2 * idx * idy * idz
+      END IF
     END IF
 
     ! Precalculate the ohmic_heat_const array if Ohmic heating is running
     IF (use_ohmic) THEN
-      ALLOCATE(ohmic_heat_const(1-ng:nx+ng,1-ng:ny+ng,1-ng:nz+ng))
-      ohmic_heat_const = dt * i_kb_sumne2
+      IF (.NOT. ALLOCATED(ohmic_heat_const)) THEN
+        ALLOCATE(ohmic_heat_const(1-ng:nx+ng,1-ng:ny+ng,1-ng:nz+ng))
+        ohmic_heat_const = dt * i_kb_sumne2
+      END IF
     END IF
 
     DEALLOCATE(i_kb_sumne2)
