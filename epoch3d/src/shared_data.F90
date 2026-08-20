@@ -725,6 +725,12 @@ MODULE shared_data
     CHARACTER(LEN=string_length) :: resistivity_table_location
     REAL(num), ALLOCATABLE :: ion_density(:,:,:), el_density(:,:,:)
 
+    ! Resistivity lookup table (loaded from resistivity_table_location)
+    REAL(num), ALLOCATABLE :: rho_table(:)    ! mass density axis [kg/m^3]
+    REAL(num), ALLOCATABLE :: te_table(:)     ! electron temperature axis [eV]
+    REAL(num), ALLOCATABLE :: ti_table(:)     ! ion temperature axis [eV]
+    REAL(num), ALLOCATABLE :: eta_table(:,:,:) ! resistivity [Ohm.m] (rho,te,ti)
+
     ! Derived variables
     REAL(num) :: theta_fac, ln_s, z_prime
     REAL(num) :: iex_term, dedx_c
@@ -742,7 +748,7 @@ MODULE shared_data
   ! Global background arrays
   REAL(num), ALLOCATABLE, DIMENSION(:,:,:) :: hy_sum_ne, resistivity, hy_te
   REAL(num), ALLOCATABLE, DIMENSION(:,:,:) :: jbx, jby, jbz
-  INTEGER, ALLOCATABLE, DIMENSION(:,:,:) :: resistivity_model
+  INTEGER, ALLOCATABLE, DIMENSION(:,:,:) :: resistivity_model, solid_index_model
 
   ! Fit variables for the reduced Lee-More model (initial values for Al)
   REAL(num) :: rlm_1 = 7.0_num

@@ -596,6 +596,12 @@ CONTAINS
           1-ng:nz_new+ng))
       resistivity_model = temp_int
 
+      CALL remap_field_int(solid_index_model, temp_int)
+      DEALLOCATE(solid_index_model)
+      ALLOCATE(solid_index_model(1-ng:nx_new+ng, 1-ng:ny_new+ng, &
+          1-ng:nz_new+ng))
+      solid_index_model = temp_int
+
       CALL remap_field(hy_te, temp)
       DEALLOCATE(hy_te)
       ALLOCATE(hy_te(1-ng:nx_new+ng, 1-ng:ny_new+ng, 1-ng:nz_new+ng))
