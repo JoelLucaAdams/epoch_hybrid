@@ -231,9 +231,8 @@ CONTAINS
         READ(lu,*) solid_array(isolid)%rho_table
         READ(lu,*) solid_array(isolid)%te_table
         READ(lu,*) solid_array(isolid)%ti_table
-
-        DO i_rho = 1, n_rho
-          DO i_te = 1, n_te
+        DO i_te = 1, n_te
+          DO i_rho = 1, n_rho
             READ(lu,*) solid_array(isolid)%eta_table(i_rho, i_te, :)
           END DO
         END DO
