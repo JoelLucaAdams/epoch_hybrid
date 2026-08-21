@@ -242,9 +242,6 @@ CONTAINS
 
 #ifdef HYBRID
     DO isolid = 1, solid_count
-      print*, solid_array(isolid)%res_model
-      print*, solid_array(isolid)%resistivity_table_location
-
       IF (solid_array(isolid)%res_model /= c_resist_table &
           .AND. LEN_TRIM(solid_array(isolid)%resistivity_table_location) > 0) THEN
         IF (rank == 0) THEN
