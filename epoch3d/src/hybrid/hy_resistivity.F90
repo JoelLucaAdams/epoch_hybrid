@@ -278,19 +278,19 @@ CONTAINS
     REAL(num) :: calc_resistivity_table
 
     INTEGER :: i_sol
-    REAL(num) :: rho_mass, te_ev, ti_ev
+    REAL(num) :: rho_mass, te, ti
 
     i_sol = solid_index_model(ix,iy,iz)
     rho_mass = solid_array(i_sol)%ion_density(ix,iy,iz) &
         * solid_array(i_sol)%mass_no * amu
-    te_ev = hy_te(ix,iy,iz) * kelvin_to_ev
+    te = hy_te(ix,iy,iz)
     IF (use_ion_temp) THEN
-      ti_ev = hy_ti(ix,iy,iz) * kelvin_to_ev
+      ti = hy_ti(ix,iy,iz)
     ELSE
-      ti_ev = te_ev
+      ti = te
     END IF
 
-    calc_resistivity_table = interp_trilinear(rho_mass, te_ev, ti_ev, i_sol)
+    calc_resistivity_table = interp_trilinear(rho_mass, te, ti, i_sol)
 
   END FUNCTION calc_resistivity_table
 
