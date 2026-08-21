@@ -220,7 +220,10 @@ CONTAINS
 
     IF (str_cmp(element, 'resistivity_table_location') &
         .OR. str_cmp(element, 'res_table_location')) THEN
-      solid_array(solid_index)%resistivity_table_location = TRIM(ADJUSTL(value))
+      CALL get_filename(TRIM(ADJUSTL(value)), filename, got_file, errcode)
+      IF (got_file) THEN
+        solid_array(solid_index)%resistivity_table_location = filename
+      END IF
       RETURN
     END If
 
