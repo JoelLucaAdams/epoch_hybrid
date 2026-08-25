@@ -353,7 +353,7 @@ CONTAINS
 
     INTEGER :: nx
     REAL(num) :: xdif1, xdif2, xdifm
-    INTEGER :: im
+    INTEGER :: im, io, iu
     LOGICAL, SAVE :: warning = .TRUE.
 
     nx = SIZE(x)
