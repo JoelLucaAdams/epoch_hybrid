@@ -320,7 +320,8 @@ CONTAINS
     DEALLOCATE(solid_array)
 
     ! Global arrays
-    DEALLOCATE(hy_te, resistivity, resistivity_model, solid_index_model, hy_sum_ne)
+    DEALLOCATE(hy_te, resistivity, resistivity_model, solid_index_model, &
+        hy_sum_ne)
     DEALLOCATE(jbx, jby, jbz)
 
     ! Ionisation/resistivity optional arrays

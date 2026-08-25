@@ -44,14 +44,17 @@ CONTAINS
     IF (deck_state == c_ds_first) RETURN
 
     DO isolid = 1, solid_count
-      IF (rank == 0 .AND. use_hybrid .AND. solid_array(isolid)%res_model == c_resist_table) THEN
-        INQUIRE(file=TRIM(solid_array(isolid)%resistivity_table_location), exist=exists)
+      IF (rank == 0 .AND. use_hybrid .AND. &
+            solid_array(isolid)%res_model == c_resist_table) THEN
+        INQUIRE(file=TRIM(solid_array(isolid)%resistivity_table_location), &
+            exist=exists)
         IF (.NOT.exists) THEN
           DO iu = 1, nio_units ! Print to stdout and to file
             io = io_units(iu)
             WRITE(io,*) '*** ERROR ***'
             WRITE(io,*) 'Unable to find the resistivity table ', &
-                '"' // TRIM(solid_array(isolid)%resistivity_table_location) // '"'
+                '"' // TRIM(solid_array(isolid)%resistivity_table_location) &
+                    // '"'
           END DO
           CALL abort_code(c_err_io_error)
         END IF
@@ -245,8 +248,8 @@ CONTAINS
 
 #ifdef HYBRID
     DO isolid = 1, solid_count
-      IF (solid_array(isolid)%res_model /= c_resist_table &
-          .AND. LEN_TRIM(solid_array(isolid)%resistivity_table_location) > 0) THEN
+      IF (solid_array(isolid)%res_model /= c_resist_table .AND. &
+        LEN_TRIM(solid_array(isolid)%resistivity_table_location) > 0) THEN
         IF (rank == 0) THEN
           DO iu = 1, nio_units ! Print to stdout and to file
             io = io_units(iu)

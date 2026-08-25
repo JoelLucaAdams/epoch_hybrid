@@ -309,9 +309,12 @@ CONTAINS
     REAL(num) :: fr, fe, fi
     REAL(num) :: w000, w100, w010, w110, w001, w101, w011, w111
 
-    CALL find_bracket_indices(rho_in, solid_array(i_sol)%rho_table, i1r, i2r, fr)
-    CALL find_bracket_indices(te_in,  solid_array(i_sol)%te_table,  i1e, i2e, fe)
-    CALL find_bracket_indices(ti_in,  solid_array(i_sol)%ti_table,  i1i, i2i, fi)
+    CALL find_bracket_indices(rho_in, solid_array(i_sol)%rho_table, &
+        i1r, i2r, fr)
+    CALL find_bracket_indices(te_in,  solid_array(i_sol)%te_table,  &
+        i1e, i2e, fe)
+    CALL find_bracket_indices(ti_in,  solid_array(i_sol)%ti_table,  &
+        i1i, i2i, fi)
 
     w000 = (1.0_num-fr) * (1.0_num-fe) * (1.0_num-fi)
     w100 = fr           * (1.0_num-fe) * (1.0_num-fi)

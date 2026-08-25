@@ -698,7 +698,7 @@ CONTAINS
 #ifdef HYBRID
   SUBROUTINE hy_bremsstrahlung_update_optical_depth
 
-    INTEGER :: isol, ispecies, iz, z_temp, part_type
+    INTEGER :: isol, ispecies, z_temp, part_type
     TYPE(particle), POINTER :: current
     REAL(num), ALLOCATABLE :: grid_root_temp_over_num(:,:,:)
     REAL(num) :: part_ux, part_uy, part_uz, gamma_rel
