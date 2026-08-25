@@ -383,7 +383,6 @@ CONTAINS
           WRITE(io,*) 'Resistivity table lookup out of range. Clamping to boundary.'
           WRITE(io,*) 'No further warnings will be issued.'
         END DO
-        CALL abort_code(c_err_io_error)
         warning = .FALSE.
       END IF
       IF (xdif1 >= 0.0_num) THEN
