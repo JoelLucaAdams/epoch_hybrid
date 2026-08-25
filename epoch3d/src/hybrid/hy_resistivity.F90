@@ -354,7 +354,7 @@ CONTAINS
     CHARACTER(*), INTENT(IN) :: axis_name
     INTEGER, INTENT(IN) :: axis_id
 
-    INTEGER :: nx, io
+    INTEGER :: nx
     REAL(num) :: xdif1, xdif2, xdifm
     INTEGER :: im, io, iu
     LOGICAL, SAVE :: warning(3) = .TRUE.
