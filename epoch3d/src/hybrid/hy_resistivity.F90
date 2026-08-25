@@ -310,11 +310,11 @@ CONTAINS
     REAL(num) :: w000, w100, w010, w110, w001, w101, w011, w111
 
     CALL find_bracket_indices(rho_in, solid_array(i_sol)%rho_table, &
-        i1r, i2r, fr)
+        i1r, i2r, fr, 'rho [kg/m^3]', 1)
     CALL find_bracket_indices(te_in,  solid_array(i_sol)%te_table,  &
-        i1e, i2e, fe)
+        i1e, i2e, fe, 'te [K]', 2)
     CALL find_bracket_indices(ti_in,  solid_array(i_sol)%ti_table,  &
-        i1i, i2i, fi)
+        i1i, i2i, fi, 'ti [K]', 3)
 
     w000 = (1.0_num-fr) * (1.0_num-fe) * (1.0_num-fi)
     w100 = fr           * (1.0_num-fe) * (1.0_num-fi)
@@ -339,22 +339,25 @@ CONTAINS
 
 
 
-  SUBROUTINE find_bracket_indices(x_in, x, i1, i2, fx)
+  SUBROUTINE find_bracket_indices(x_in, x, i1, i2, fx, axis_name, axis_id)
 
     ! Bisection search to find adjacent bracket indices i1, i2 in sorted
     ! array x such that x(i1) <= x_in <= x(i2).  Returns the linear fraction
     ! fx = (x_in - x(i1)) / (x(i2) - x(i1)).  Values outside the array range
-    ! are clamped to the nearest boundary with a one-time rank-0 warning.
+    ! are clamped to the nearest boundary with a one-time rank-0 warning,
+    ! issued independently per axis (axis_id selects which of rho/te/ti).
 
     REAL(num), INTENT(IN) :: x_in
     REAL(num), INTENT(IN) :: x(:)
     INTEGER, INTENT(OUT) :: i1, i2
     REAL(num), INTENT(OUT) :: fx
+    CHARACTER(*), INTENT(IN) :: axis_name
+    INTEGER, INTENT(IN) :: axis_id
 
-    INTEGER :: nx
+    INTEGER :: nx, io
     REAL(num) :: xdif1, xdif2, xdifm
     INTEGER :: im, io, iu
-    LOGICAL, SAVE :: warning = .TRUE.
+    LOGICAL, SAVE :: warning(3) = .TRUE.
 
     nx = SIZE(x)
     xdif1 = x(1) - x_in
@@ -376,14 +379,18 @@ CONTAINS
       END DO
       fx = (x_in - x(i1)) / (x(i2) - x(i1))
     ELSE
-      IF (warning .AND. rank == 0) THEN
+      IF (warning(axis_id) .AND. rank == 0) THEN
         DO iu = 1, nio_units ! Print to stdout and to file
           io = io_units(iu)
           WRITE(io,*) '*** WARNING ***'
-          WRITE(io,*) 'Resistivity table lookup out of range. Clamping to boundary.'
-          WRITE(io,*) 'No further warnings will be issued.'
+          WRITE(io,*) 'Resistivity table lookup out of range for axis: ', &
+              TRIM(axis_name)
+          WRITE(io,*) 'Value: ', x_in, ' Table range: [', x(1), ', ', &
+              x(nx), ']'
+          WRITE(io,*) 'Clamping to boundary. No further warnings will be ', &
+              'issued for this axis.'
         END DO
-        warning = .FALSE.
+        warning(axis_id) = .FALSE.
       END IF
       IF (xdif1 >= 0.0_num) THEN
         i1 = 1
