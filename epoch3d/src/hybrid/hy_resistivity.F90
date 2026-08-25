@@ -377,9 +377,13 @@ CONTAINS
       fx = (x_in - x(i1)) / (x(i2) - x(i1))
     ELSE
       IF (warning .AND. rank == 0) THEN
-        PRINT*, '*** WARNING ***'
-        PRINT*, 'Resistivity table lookup out of range. Clamping to boundary.'
-        PRINT*, 'No further warnings will be issued.'
+        DO iu = 1, nio_units ! Print to stdout and to file
+          io = io_units(iu)
+          WRITE(io,*) '*** WARNING ***'
+          WRITE(io,*) 'Resistivity table lookup out of range. Clamping to boundary.'
+          WRITE(io,*) 'No further warnings will be issued.'
+        END DO
+        CALL abort_code(c_err_io_error)
         warning = .FALSE.
       END IF
       IF (xdif1 >= 0.0_num) THEN
