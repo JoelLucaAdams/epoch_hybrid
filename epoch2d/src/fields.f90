@@ -547,6 +547,9 @@ CONTAINS
     ! Now have E(t+dt/2), do boundary conditions on E
     CALL efield_bcs
 
+    ! Energy lost through boundaries using E(t+dt/2) and B(t)
+    IF (dump_field_energy_lost) CALL calc_field_energy_lost
+
     ! Update B field to t+dt/2 using E(t+dt/2)
     CALL update_b_field
 
@@ -574,6 +577,9 @@ CONTAINS
     CALL update_b_field
 
     CALL bfield_final_bcs
+
+    ! Energy lost through boundaries using E(t+dt/2) and B(t+dt)
+    IF (dump_field_energy_lost) CALL calc_field_energy_lost
 
     CALL update_e_field
 

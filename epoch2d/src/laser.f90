@@ -697,4 +697,60 @@ CONTAINS
 
   END SUBROUTINE calc_absorption
 
+
+
+  ! Returns the electromagnetic energy flux leaving the domain through boundary
+  ! 'bd', integrated along the part of the boundary owned by this process
+  ! (in W/m). This is the discrete Poynting flux for the Yee scheme: the
+  ! product of the tangential E-fields in the first cell and the tangential
+  ! B-fields on the boundary face, as used in the E-field update. Unlike
+  ! calc_absorption, no spatial averaging is applied, so with the Yee solver
+  ! the accumulated value exactly balances the solver's discrete field energy.
+
+  FUNCTION boundary_energy_flux(bd) RESULT(flux)
+
+    INTEGER, INTENT(IN) :: bd
+    REAL(num) :: flux
+
+    SELECT CASE(bd)
+      CASE(c_bd_x_min)
+        flux = -dy * SUM(ey(1,1:ny) * bz(0,1:ny) - ez(1,1:ny) * by(0,1:ny))
+      CASE(c_bd_x_max)
+        flux = dy * SUM(ey(nx,1:ny) * bz(nx,1:ny) - ez(nx,1:ny) * by(nx,1:ny))
+      CASE(c_bd_y_min)
+        flux = -dx * SUM(ez(1:nx,1) * bx(1:nx,0) - ex(1:nx,1) * bz(1:nx,0))
+      CASE(c_bd_y_max)
+        flux = dx * SUM(ez(1:nx,ny) * bx(1:nx,ny) - ex(1:nx,ny) * bz(1:nx,ny))
+      CASE DEFAULT
+        flux = 0.0_num
+    END SELECT
+
+    flux = flux / mu0
+
+  END FUNCTION boundary_energy_flux
+
+
+
+  ! Accumulates the net field energy leaving the domain through each
+  ! simple_laser or simple_outflow boundary over half a timestep.
+  ! This is called twice per step: once after the first half-step E update
+  ! (with E at t+dt/2 and B at t) and once after the final B update (with E at
+  ! t+dt/2 and B at t+dt). Summed over all steps, this is equivalent to using
+  ! the time-centred E-field with each B-field, as required for the discrete
+  ! energy balance of the leapfrog scheme.
+
+  SUBROUTINE calc_field_energy_lost
+
+    INTEGER :: i
+
+    DO i = 1, 2*c_ndims
+      IF (.NOT.is_boundary(i)) CYCLE
+      IF (bc_field(i) /= c_bc_simple_laser &
+          .AND. bc_field(i) /= c_bc_simple_outflow) CYCLE
+      field_energy_lost_local(i) = field_energy_lost_local(i) &
+          + 0.5_num * dt * boundary_energy_flux(i)
+    END DO
+
+  END SUBROUTINE calc_field_energy_lost
+
 END MODULE laser
