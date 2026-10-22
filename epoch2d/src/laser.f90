@@ -725,6 +725,12 @@ CONTAINS
         flux = 0.0_num
     END SELECT
 
+    ! Negative values represent field energy entering the simulation, since we
+    ! only want to track energy lost, set these to 0.
+    IF (flux < 0.0_num) THEN
+      flux = 0.0_num
+    END IF
+
     flux = flux / mu0
 
   END FUNCTION boundary_energy_flux
